@@ -16,9 +16,9 @@ class SearchViewController: UIViewController {
     private var searchViewModel: SearchViewModel?
     
     override func viewDidLoad() {
+        setupViewModel()
         setDelegates()
         registerXibs()
-        setupViewModel()
     }
     
     private func setupViewModel() {
@@ -65,6 +65,7 @@ extension SearchViewController: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         shouldShowCancel(true)
     }
+    
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         shouldShowCancel(false)
     }
@@ -80,6 +81,7 @@ extension SearchViewController: UISearchBarDelegate {
         }
         
     }
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
         searchViewModel?.filerMoviesBy(name: "")
