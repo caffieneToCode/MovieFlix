@@ -13,10 +13,6 @@ class MovieDetailsViewController: UIViewController {
     @IBOutlet weak var backDropImageView: UIImageView!
     
     var viewModel: DetailViewModel?
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
