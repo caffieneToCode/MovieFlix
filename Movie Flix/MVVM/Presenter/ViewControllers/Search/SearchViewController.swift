@@ -12,22 +12,14 @@ class SearchViewController: UIViewController {
     
     @IBOutlet weak var searchBar: UISearchBar?
     @IBOutlet weak var moviesCollectionView: UICollectionView?
-    
-    private var searchViewModel: SearchViewModel?
+
+    private let searchViewModel = SearchViewModel()
     
     override func viewDidLoad() {
-        setupViewModel()
+
+        self.searchViewModel.viewController = self
         setDelegates()
         registerXibs()
-    }
-    
-    private func setupViewModel() {
-        searchViewModel = SearchViewModel()
-        searchViewModel?.movies.attachAndUpdate({ [weak self] (movies) in
-            DispatchQueue.main.async {
-                self?.moviesCollectionView?.reloadData()
-            }
-        })
     }
     
     private func setDelegates() {
@@ -41,7 +33,7 @@ class SearchViewController: UIViewController {
     }
     
     internal func fetchMovies(urlString: String) {
-        searchViewModel?.fetchMovies(urlString: urlString)
+        searchViewModel.fetchMovies(urlString: urlString)
     }
     
     required init?(coder: NSCoder) {
@@ -71,7 +63,7 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        searchViewModel?.filerMoviesBy(name: searchText)
+        searchViewModel.filerMoviesBy(name: searchText)
     }
     
     func shouldShowCancel(_ shouldShow: Bool) {
@@ -79,26 +71,24 @@ extension SearchViewController: UISearchBarDelegate {
             self?.searchBar?.showsCancelButton = shouldShow
             self?.view.layoutIfNeeded()
         }
-        
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
-        searchViewModel?.filerMoviesBy(name: "")
+        searchViewModel.filerMoviesBy(name: "")
         searchBar.resignFirstResponder()
     }
 }
 
 extension SearchViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return searchViewModel?.movies.value.count ?? 0
+        return searchViewModel.movies?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let movieCell = moviesCollectionView?.dequeueReusableCell(withReuseIdentifier: "MovieCell", for: indexPath) as! MovieCell
-        if let currentMovie = searchViewModel?.movies.value[indexPath.row] {
-            movieCell.movieModel = currentMovie
-        }
+        let currentMovie = searchViewModel.movies?[indexPath.row]
+        movieCell.movieModel = currentMovie
         return movieCell
     }
 }
@@ -108,7 +98,7 @@ extension SearchViewController: UICollectionViewDelegate {
         self.searchBar?.resignFirstResponder()
         let detailsViewController = MovieDetailsViewController()
         let detailViewModel = DetailViewModel()
-        detailViewModel.movie = searchViewModel?.movies.value[indexPath.row]
+        detailViewModel.movie = searchViewModel.movies?[indexPath.row]
         detailsViewController.viewModel = detailViewModel
         self.navigationController?.pushViewController(detailsViewController, animated: true)
     }
